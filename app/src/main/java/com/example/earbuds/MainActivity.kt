@@ -16,6 +16,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.KeyEvent
+import android.view.SoundEffectConstants
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -83,6 +84,10 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
     }
 
+    private fun click() {
+        window.decorView.playSoundEffect(SoundEffectConstants.CLICK)
+    }
+
     @SuppressLint("MissingPermission")
     private fun connectProxy() {
         adapter?.getProfileProxy(this, object : BluetoothProfile.ServiceListener {
@@ -116,6 +121,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun toggleConnection(d: BluetoothDevice, connect: Boolean) {
+        click()
         val proxy = a2dp
         val ok = try {
             val m = BluetoothA2dp::class.java.getDeclaredMethod(
@@ -134,6 +140,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun sendKey(code: Int) {
+        click()
         audio.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, code))
         audio.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, code))
     }
@@ -158,6 +165,7 @@ class MainActivity : ComponentActivity() {
             if (!hasPermission) {
                 Text("Нужно разрешение на доступ к Bluetooth.")
                 Button(onClick = {
+                    click()
                     permissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
                 }) { Text("Дать разрешение") }
                 return@Column
@@ -209,12 +217,18 @@ class MainActivity : ComponentActivity() {
             }
 
             OutlinedButton(
-                onClick = { startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) },
+                onClick = {
+                    click()
+                    startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                },
                 modifier = Modifier.fillMaxWidth()
             ) { Text("Настройки Bluetooth") }
 
             OutlinedButton(
-                onClick = { tick++ },
+                onClick = {
+                    click()
+                    tick++
+                },
                 modifier = Modifier.fillMaxWidth()
             ) { Text("Обновить") }
         }
